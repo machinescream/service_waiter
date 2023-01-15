@@ -1,16 +1,20 @@
-class DependenciesContainer {
+class ServiceWaiter {
   final _cache = <Type, Object>{};
   final _factory = <Type, Object Function()>{};
 
-  void update<T extends Object>(T Function(DependenciesContainer container) getter) {
+  void update<T extends Object>(T Function(ServiceWaiter waiter) getter) {
     _factory[T] = () => getter(this);
   }
 
   T dependency<T>({bool existingInstance = true}) {
-    if (existingInstance) {
-      return (_cache[T] ?? (_cache[T] = _factory[T]!())) as T;
-    } else {
-      return _factory[T]!() as T;
+    try {
+      if (existingInstance) {
+        return (_cache[T] ?? (_cache[T] = _factory[T]!())) as T;
+      } else {
+        return _factory[T]!() as T;
+      }
+    } catch (e) {
+      throw DependencyNotFoundException<T>();
     }
   }
 
@@ -22,11 +26,7 @@ class DependenciesContainer {
   }
 }
 
-class DependencyNotFoundException implements Exception {
-  final Type dependencyType;
-
-  DependencyNotFoundException(this.dependencyType);
-
+class DependencyNotFoundException<T> implements Exception {
   @override
-  String toString() => 'DependencyNotFoundException: undeclared is $dependencyType';
+  String toString() => 'dependency not found:$T undeclared';
 }
