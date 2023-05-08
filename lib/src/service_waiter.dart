@@ -1,5 +1,7 @@
+import 'package:service_waiter/src/service_waiter_interface.dart';
+
 // Represents a service waiter that manages dependencies
-class ServiceWaiter {
+final class ServiceWaiter implements ServiceWaiterInterface {
   // Cache for storing instantiated dependencies
   final _cache = <Type, Object>{};
 
@@ -7,11 +9,13 @@ class ServiceWaiter {
   final _factory = <Type, Object Function()>{};
 
   // Updates the factory with a new dependency getter
+  @override
   void update<T extends Object>(T Function(ServiceWaiter waiter) getter) {
     _factory[T] = () => getter(this);
   }
 
   // Retrieves a dependency of the given type, either from the cache or the factory
+  @override
   T dependency<T>({bool existingInstance = true}) {
     try {
       if (existingInstance) {
@@ -25,17 +29,13 @@ class ServiceWaiter {
   }
 
   // Removes a cached singleton instance of the given type
+  @override
   void clearSingleton<T>() => _cache.remove(T);
 
   // Clears all cached instances and factory definitions
+  @override
   void clear() {
     _cache.clear();
     _factory.clear();
   }
-}
-
-// Custom exception for dependency not found errors
-class DependencyNotFoundException<T> implements Exception {
-  @override
-  String toString() => 'Dependency not found: $T undeclared';
 }
