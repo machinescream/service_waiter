@@ -15,7 +15,7 @@ class ServiceProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ServiceWaiterProvider(
+    return _ServiceWaiterProvider(
       factory: factory,
       child: child,
       ownerContext: context,
@@ -24,12 +24,12 @@ class ServiceProvider extends StatelessWidget {
   }
 }
 
-final class ServiceWaiterProvider extends InheritedWidget {
+final class _ServiceWaiterProvider extends InheritedWidget {
   final BuildContext ownerContext;
   final void Function(ServiceWaiterInterface serviceWaiter) factory;
   final ServiceWaiterInterface Function() serviceWaiterGetter;
 
-  ServiceWaiterProvider({
+  _ServiceWaiterProvider({
     required this.factory,
     required super.child,
     required this.ownerContext,
@@ -46,7 +46,7 @@ final class ServiceWaiterProvider extends InheritedWidget {
   }
 
   @override
-  bool updateShouldNotify(ServiceWaiterProvider oldWidget) {
+  bool updateShouldNotify(_ServiceWaiterProvider oldWidget) {
     return false;
   }
 }
@@ -80,9 +80,9 @@ extension ContextDependency on BuildContext {
 
   T _searchForDependency<T>(BuildContext? target, bool existingInstance) {
     final candidateWidget =
-        target?.getInheritedWidgetOfExactType<ServiceWaiterProvider>();
+        target?.getInheritedWidgetOfExactType<_ServiceWaiterProvider>();
     final candidateElement = target
-        ?.getElementForInheritedWidgetOfExactType<ServiceWaiterProvider>();
+        ?.getElementForInheritedWidgetOfExactType<_ServiceWaiterProvider>();
     if (candidateElement == null)
       throw Exception("ServiceWaiterProvider not found");
     try {
