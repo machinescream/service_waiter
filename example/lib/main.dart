@@ -20,36 +20,41 @@ class ServiceWaiterExample extends StatefulWidget {
 class _ServiceWaiterExampleState extends State<ServiceWaiterExample> {
   @override
   Widget build(BuildContext context) {
-    return ServiceProvider(
-      factory: (sw) {
-        sw.update<List>((waiter) => []);
-      },
-      child: ServiceProvider(
-        factory: (sw) {
-          sw.update((waiter) => "hello");
-        },
-        child: ServiceProvider(
-          factory: (sw) {
-            sw.update((waiter) => 1);
-          },
-          child: GestureDetector(
-            onTap: (){
-              setState(() {
-
-              });
-            },
-            child: Builder(
-              builder: (ctx) {
-                return Center(
-                  child: Text(
-                    "${ctx.dependency<int>()} ${ctx.dependency<String>()} ${ctx.dependency<List>()}",
-                  ),
-                );
-              },
+    return Container(
+      color: Colors.red,
+      margin: const EdgeInsets.all(20),
+      child: Builder(
+        builder: (ctx) {
+          return Container(
+            color: Colors.blue,
+            margin: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                Text("${ctx.dependency<List<int>>()}"),
+                Builder(builder: (ctx) {
+                  return Container(
+                    color: Colors.green,
+                    margin: const EdgeInsets.all(20),
+                    child: Text(
+                      "${ctx.dependency<int>()} and ${ctx.dependency<List<int>>().length}",
+                    ),
+                  );
+                })
+              ],
             ),
-          ),
-        ),
+          );
+        },
+      ).enviroment(
+        (serviceWaiter) {
+          serviceWaiter.register((waiter) => 5);
+        },
+        ValueKey("second"),
       ),
+    ).enviroment(
+      (serviceWaiter) {
+        serviceWaiter.register((waiter) => [1, 2, 3]);
+      },
+      ValueKey("first"),
     );
   }
 }
